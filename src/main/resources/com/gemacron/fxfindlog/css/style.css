@@ -59,3 +59,59 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
 .table-view .check-box:selected .mark {
     -fx-background-color: #00f0ff;
 }
+
+/* =======================================================
+   ESTILOS PARA EL COMBOBOX (DARK THEME)
+   ======================================================= */
+
+/* 1. Contenedor principal invisible */
+.combo-box {
+    -fx-background-color: transparent;
+}
+
+/* 2. El campo de texto interno (Como es editable) */
+.combo-box .text-field {
+    -fx-background-color: #0f141c;
+    -fx-text-fill: #f8fafc;
+    -fx-border-color: #242f41;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* 3. El botón lateral gris (Lo volvemos oscuro) */
+.combo-box .arrow-button {
+    -fx-background-color: #0f141c;
+    -fx-border-color: #242f41;
+    /* Ajustamos los bordes para que se fusione con el TextField */
+    -fx-border-width: 1 1 1 0; 
+    -fx-border-radius: 0 4 4 0;
+    -fx-background-radius: 0 4 4 0;
+    -fx-cursor: hand;
+}
+
+/* 4. La flechita desplegable */
+.combo-box .arrow {
+    -fx-background-color: #94a3b8; /* Mismo gris azulado de tus labels */
+}
+
+/* 5. El fondo de la lista desplegable flotante */
+.combo-box-popup .list-view {
+    -fx-background-color: #0f141c;
+    -fx-border-color: #242f41;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* 6. Las opciones de la lista */
+.combo-box-popup .list-cell {
+    -fx-text-fill: #f8fafc;
+    -fx-background-color: transparent;
+    -fx-padding: 8 10 8 10;
+}
+
+/* 7. Efecto Hover y Selección en la lista */
+.combo-box-popup .list-cell:filled:hover, 
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #00e5ff; /* Tu cyan característico para resaltar */
+}

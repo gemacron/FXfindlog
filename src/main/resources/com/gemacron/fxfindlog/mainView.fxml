@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-Created by gemacron
--->
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ProgressIndicator?>
@@ -20,141 +17,130 @@ Created by gemacron
 <?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #0b0f19;" stylesheets="@css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gemacron.fxfindlog.MainController">
-   <top>
-      <VBox spacing="10.0" style="-fx-background-color: #0f141c; -fx-border-color: #1e293b; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
-         <children>
-            <Label text="CONFIGURACIÓN DE CREDENCIALES HOMOGÉNEAS Y LOGS" textFill="#00e5ff">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Label>
-            <HBox alignment="CENTER_LEFT" spacing="15.0">
-               <children>
-                  <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label text="Usuario SSH" textFill="#94a3b8" />
-                        <TextField fx:id="txtUsuario" promptText="ej. admin_logs" style="-fx-background-color: #161c26; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" />
-                     </children>
-                  </VBox>
-                  <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label text="Contraseña SSH" textFill="#94a3b8" />
-                        <PasswordField fx:id="txtPassword" promptText="••••••••" style="-fx-background-color: #161c26; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" />
-                     </children>
-                  </VBox>
-                  <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label text="Ruta Absoluta del Log" textFill="#94a3b8" />
-                        <TextField fx:id="txtRutaLog" promptText="/var/log/syslog" style="-fx-background-color: #161c26; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="BOTTOM_LEFT" spacing="5.0">
-                     <padding>
-                        <Insets bottom="5.0" />
-                     </padding>
-                  </VBox>
-               </children>
-            </HBox>
-         </children>
-         <padding>
-            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-         </padding>
-      </VBox>
-   </top>
-   <center>
-      <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" style="-fx-background-color: #0b0f19;" BorderPane.alignment="CENTER">
-        <items>
-          <VBox spacing="10.0" style="-fx-background-color: #0f141c;">
-               <children>
-                  <Label text="SERVIDORES GUARDADOS (SQLite)" textFill="#94a3b8">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-                  <TableView fx:id="tableServidores" editable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41;" styleClass="table-view" VBox.vgrow="ALWAYS">
-                    <columns>
-                      <TableColumn fx:id="colAlias" prefWidth="120.0" text="Alias" />
-                      <TableColumn fx:id="colIp" prefWidth="180.0" text="Dirección IP" />
-                      <TableColumn fx:id="colSeleccionar" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" resizable="false" text="[X]" />
-                    </columns>
-                  </TableView>
-                  <VBox spacing="8.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41; -fx-border-radius: 6; -fx-background-radius: 6;">
-                     <children>
-                        <Label text="Agregar Servidor" textFill="#00e5ff">
-                           <font>
-                              <Font name="System Bold" size="11.0" />
-                           </font>
+    <center>
+        <SplitPane dividerPositions="0.35" prefHeight="160.0" prefWidth="200.0" style="-fx-background-color: #0b0f19;" BorderPane.alignment="CENTER">
+            <items>
+                <VBox spacing="10.0" style="-fx-background-color: #0f141c;">
+                    <children>
+                        <Label text="SERVIDORES Y RUTAS (SQLite)" textFill="#94a3b8">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
                         </Label>
-                        <HBox spacing="8.0">
-                           <children>
-                              <TextField fx:id="txtNuevoAlias" promptText="Alias (ej. Producción A)" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
-                              <TextField fx:id="txtNuevaIp" promptText="IP (ej. 192.168.1.100)" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT" spacing="10.0">
-                           <children>
-                              <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#handleEliminarServidor" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Eliminar Seleccionado" />
-                              <Button fx:id="btnAgregar" mnemonicParsing="false" onAction="#handleAgregarServidor" style="-fx-background-color: #10b981; -fx-text-fill: white;" text="Guardar" />
-                           </children>
-                        </HBox>
-                     </children>
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </VBox>
-               </children>
-               <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </padding>
-            </VBox>
-          <VBox spacing="15.0" style="-fx-background-color: #0f141c;">
-               <children>
-                  <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41; -fx-border-radius: 8; -fx-background-radius: 8;">
-                     <children>
-                        <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label text="Patrón de Búsqueda (Texto / RegEx)" textFill="#94a3b8">
-                                 <font>
-                                    <Font name="System Bold" size="12.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="txtPatron" promptText="ej. ERROR|Exception|Timeout" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" />
-                           </children>
+                        <TableView fx:id="tableServidores" editable="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41;" styleClass="table-view" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colAlias" prefWidth="100.0" text="Alias" />
+                                <TableColumn fx:id="colIp" prefWidth="120.0" text="Dirección IP" />
+                                <TableColumn fx:id="colRutaLog" prefWidth="180.0" text="Ruta Log" />
+                                <TableColumn fx:id="colSeleccionar" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" resizable="false" text="[X]" />
+                            </columns>
+                        </TableView>
+                  
+                        <VBox spacing="10.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41; -fx-border-radius: 6; -fx-background-radius: 6;">
+                            <children>
+                                <Label text="Configurar Nuevo Servidor y Accesos" textFill="#00e5ff">
+                                    <font>
+                                        <Font name="System Bold" size="12.0" />
+                                    </font>
+                                </Label>
+                        
+                                <HBox spacing="8.0">
+                                    <children>
+                                        <TextField fx:id="txtNuevoAlias" promptText="Alias (ej. Producción)" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="txtNuevaIp" promptText="IP (ej. 192.168.x.x)" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                        
+                                <HBox spacing="8.0">
+                                    <children>
+                                        <TextField fx:id="txtNuevaRuta" promptText="Ruta absoluta (ej. /var/log/nginx/)" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+
+                                <HBox spacing="8.0">
+                                    <children>
+                                        <ComboBox fx:id="cmbUsuario" editable="true" promptText="Usuario SSH" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                        <PasswordField fx:id="txtPassword" promptText="Contraseña SSH" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4;" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+
+                                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                                    <children>
+                                        <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#handleEliminarServidor" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Eliminar Selección" />
+                                        <Button fx:id="btnAgregar" mnemonicParsing="false" onAction="#handleAgregarServidor" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold;" text="Guardar Servidor" />
+                                    </children>
+                                </HBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                            </padding>
                         </VBox>
-                        <Button fx:id="btnBuscar" mnemonicParsing="false" onAction="#handleBuscarLog" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #00e5ff; -fx-text-fill: #0b0f19; -fx-font-weight: bold;" text="CONSULTAR SSH" />
-                     </children>
-                     <padding>
+                    </children>
+                    <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                     </padding>
-                  </HBox>
-                  <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label text="Consola de Resultados Remotos" textFill="#94a3b8" />
-                        <TextArea fx:id="txtAreaConsola" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-control-inner-background: #0b0f19; -fx-text-fill: #ffffff; -fx-font-family: 'Fira Code', 'Consolas', monospace; -fx-font-size: 14;" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #161c26; -fx-padding: 8 15; -fx-border-color: #242f41; -fx-border-radius: 6; -fx-background-radius: 6;">
-                     <children>
-                        <ProgressIndicator fx:id="progressIndicator" prefHeight="20.0" prefWidth="20.0" visible="false" />
-                        <Label fx:id="lblEstado" text="Listo" textFill="#94a3b8" />
-                        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label text="Servidor Activo: " textFill="#64748b" />
-                              <Label fx:id="lblActiveServer" text="Ninguno seleccionado" textFill="#00e5ff">
-                                 <font>
-                                    <Font name="System Bold" size="12.0" />
-                                 </font>
-                              </Label>
-                           </children>
+                    </padding>
+                </VBox>
+            
+                <VBox spacing="15.0" style="-fx-background-color: #0f141c;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: #161c26; -fx-border-color: #242f41; -fx-border-radius: 8; -fx-background-radius: 8;">
+                            <children>
+                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Patrón de Búsqueda (Texto / RegEx)" textFill="#94a3b8">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="txtPatron" promptText="ej. ERROR | Exception | 5319220526000002" style="-fx-background-color: #0f141c; -fx-text-fill: #f8fafc; -fx-border-color: #242f41; -fx-border-radius: 4; -fx-background-radius: 4; -fx-font-size: 14;" />
+                                    </children>
+                                </VBox>
+                                <Button fx:id="btnBuscar" mnemonicParsing="false" onAction="#handleBuscarLog" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #00e5ff; -fx-text-fill: #0b0f19; -fx-font-weight: bold;" text="CONSULTAR SSH" />
+                                <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#handleCancelarBusqueda" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold;" text="CANCELAR" disable="true" />
+                            </children>
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
                         </HBox>
-                     </children>
-                  </HBox>
-               </children>
-               <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </padding>
-            </VBox>
-        </items>
-      </SplitPane>
-   </center>
+                        <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label text="Consola de Resultados Remotos" textFill="#94a3b8" />
+                                <TextArea fx:id="txtAreaConsola" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-control-inner-background: #0b0f19; -fx-text-fill: #ffffff; -fx-font-family: 'Fira Code', 'Consolas', monospace; -fx-font-size: 14;" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #161c26; -fx-padding: 8 15; -fx-border-color: #242f41; -fx-border-radius: 6; -fx-background-radius: 6;">
+                            <children>
+                                <ProgressIndicator fx:id="progressIndicator" prefHeight="20.0" prefWidth="20.0" visible="false" />
+                                <Label fx:id="lblEstado" text="Listo para auditar." textFill="#94a3b8" />
+                                <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Servidor Activo: " textFill="#64748b" />
+                                        <Label fx:id="lblActiveServer" text="Esperando consulta..." textFill="#00e5ff">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                </VBox>
+            </items>
+        </SplitPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #0b0f19; -fx-padding: 5 15 10 15;" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="created by gem@cron" textFill="#475569">
+                    <font>
+                        <Font name="System Italic" size="11.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+    </bottom>
 </BorderPane>
