@@ -203,7 +203,7 @@ public class Updater extends Application {
             if (jarFile.exists()) {
                 // Utiliza la misma máquina virtual de Java (JRE) que está corriendo este updater
                 String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-                new ProcessBuilder(javaBin, "-jar", LATEST_JAR).start();
+                new ProcessBuilder(javaBin, "-cp", LATEST_JAR, "com.gemacron.fxfindlog.Launcher").start();
             } else {
                 Platform.runLater(() -> {
                     lblEstado.setText("Error Fatal: No se encontró el ejecutable. Verifique la red.");
