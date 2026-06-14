@@ -6,7 +6,7 @@ package com.gemacron.fxfindlog.updater;
 
 /**
  *
- * @author gemac
+ * @author gemacron
  */
 
 import javafx.application.Application;
@@ -27,31 +27,19 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Lanzador Inteligente (Stub) para FXfindlog implementado 100% en JavaFX.
- * Vinculado al repositorio: https://github.com/gemacron/FXfindlog
- * Descarga las actualizaciones en la carpeta de usuario para evadir bloqueos de permisos de Windows (UAC).
- */
 public class Updater extends Application {
 
     private static final String APP_NAME = "FXfindlog";
-    
-    // --- VINCULACIÓN EXACTA A TU REPOSITORIO DE GITHUB ---
     private static final String GIT_OWNER = "gemacron";
     private static final String GIT_REPO = "FXfindlog";
     private static final String UPDATE_URL = "https://api.github.com/repos/" + GIT_OWNER + "/" + GIT_REPO + "/releases/latest";
     
-    // Rutas de persistencia seguras (Directorio de usuario)
-    private static final String USER_HOME = System.getProperty("user.home");
-    private static final String APP_DIR = USER_HOME + File.separator + ".fxfindlog";
-    private static final String VERSION_FILE = APP_DIR + File.separator + "version.properties";
-    private static final String LATEST_JAR = APP_DIR + File.separator + "FXfindlog-latest.jar";
-    private static final String TEMP_JAR = APP_DIR + File.separator + "download.tmp";
+    // El archivo de versión ahora vive junto al ejecutable en AppData
+    private static final String VERSION_FILE = "version.properties";
 
     private ProgressBar progressBar;
     private Label lblEstado;
@@ -64,18 +52,8 @@ public class Updater extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        asegurarDirectorio();
         inicializarUI(primaryStage);
-        
-        // Disparar proceso asíncrono en un hilo independiente para no congelar la UI de JavaFX
         new Thread(this::procesarArranque).start();
-    }
-
-    private void asegurarDirectorio() {
-        File dir = new File(APP_DIR);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
     }
 
     private void inicializarUI(Stage stage) {
@@ -84,21 +62,19 @@ public class Updater extends Application {
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #0b0f19; -fx-border-color: #1e293b; -fx-border-width: 2px;");
 
-        lblEstado = new Label("Verificando actualizaciones en GitHub...");
+        lblEstado = new Label("Buscando actualizaciones rápidas...");
         lblEstado.setTextFill(Color.web("#00e5ff"));
         lblEstado.setFont(Font.font("Segoe UI", FontWeight.BOLD, 12));
 
         progressBar = new ProgressBar(ProgressBar.INDETERMINATE_PROGRESS);
         progressBar.setPrefWidth(360);
         progressBar.setPrefHeight(10);
-        // Estilos CSS integrados para acoplarse al Dark Theme de tu aplicación
         progressBar.setStyle("-fx-accent: #00e5ff; -fx-control-inner-background: #161b22; -fx-background-color: #1e293b;");
 
         root.getChildren().addAll(lblEstado, progressBar);
-
         Scene scene = new Scene(root, 400, 120);
         
-        stage.initStyle(StageStyle.UNDECORATED); // Estilo Splash Screen (sin bordes de ventana)
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Iniciando " + APP_NAME + "...");
         stage.setScene(scene);
         stage.centerOnScreen();
@@ -108,14 +84,12 @@ public class Updater extends Application {
     private void procesarArranque() {
         try {
             String versionLocal = obtenerVersionLocal();
-            
-            // 1. Consultar API de GitHub
             URL url = new URL(UPDATE_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
-            conn.setRequestProperty("User-Agent", "Java-Git-Updater-" + APP_NAME);
+            conn.setRequestProperty("User-Agent", "Java-Delta-Updater-" + APP_NAME);
 
             if (conn.getResponseCode() == 200) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
@@ -126,41 +100,48 @@ public class Updater extends Application {
 
                 parsearGitResponse(response.toString());
 
-                // 2. Si hay nueva versión, o el JAR no existe físicamente, descargarlo
-                File jarLocal = new File(LATEST_JAR);
-                if (esVersionSuperior(nuevaVersion, versionLocal) || !jarLocal.exists()) {
-                    descargarActualizacion();
-                    return; // El método de descarga se encarga de lanzar la app al final
+                if (esVersionSuperior(nuevaVersion, versionLocal)) {
+                    descargarYAplicarDelta();
+                    return; 
                 }
             }
-            
-            // 3. Si no hay actualizaciones, lanzar aplicación inmediatamente
-            lanzarAplicacionPrincipal();
+            // Si no hay actualización, arrancamos en memoria
+            lanzarAplicacionPrincipalEnMemoria();
 
         } catch (Exception e) {
-            System.err.println("Fallo al verificar red: " + e.getMessage());
-            // En caso de estar sin internet, intentar abrir la última versión descargada
-            lanzarAplicacionPrincipal();
+            e.printStackTrace();
+            lanzarAplicacionPrincipalEnMemoria();
         }
     }
 
-    private void descargarActualizacion() {
-        // En JavaFX, cualquier cambio en la interfaz gráfica DEBE ejecutarse en Platform.runLater
+    private void descargarYAplicarDelta() {
         Platform.runLater(() -> {
-            lblEstado.setText("Descargando actualización " + nuevaVersion + "...");
+            lblEstado.setText("Aplicando parche " + nuevaVersion + "...");
             progressBar.setProgress(0.0);
         });
         
         try {
+            // Buscamos cuál es el .jar original que está en la carpeta "app"
+            File appDir = new File("app");
+            File originalJar = null;
+            if (appDir.exists() && appDir.isDirectory()) {
+                File[] jars = appDir.listFiles((dir, name) -> name.endsWith(".jar") && !name.equals("update.jar"));
+                if (jars != null && jars.length > 0) originalJar = jars[0];
+            }
+
+            if (originalJar == null) throw new Exception("No se encontró el JAR original");
+
+            File updateJar = new File("app", "update.jar");
+
+            // Descarga optimizada con Buffer de 128KB
             URL url = new URL(downloadUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "Java-Git-Updater-" + APP_NAME);
+            connection.setRequestProperty("User-Agent", "Java-Delta-Updater-" + APP_NAME);
             connection.setInstanceFollowRedirects(true);
             connection.connect();
 
-            // Seguir redirecciones (GitHub usa servidores CDN de AWS)
             int status = connection.getResponseCode();
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == 302) {
+            if (status == 301 || status == 302) {
                 String newUrl = connection.getHeaderField("Location");
                 connection = (HttpURLConnection) new URL(newUrl).openConnection();
                 connection.connect();
@@ -168,9 +149,9 @@ public class Updater extends Application {
 
             int fileLength = connection.getContentLength();
             InputStream input = connection.getInputStream();
-            OutputStream output = new FileOutputStream(TEMP_JAR);
+            OutputStream output = new FileOutputStream(updateJar);
 
-            byte[] data = new byte[4096];
+            byte[] data = new byte[131072]; // Buffer ultra rápido
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {
@@ -181,44 +162,44 @@ public class Updater extends Application {
                 }
                 output.write(data, 0, count);
             }
-
             output.flush(); output.close(); input.close();
 
-            // Reemplazo atómico
-            Files.move(Paths.get(TEMP_JAR), Paths.get(LATEST_JAR), StandardCopyOption.REPLACE_EXISTING);
             actualizarPropiedadesLocales(nuevaVersion);
-            
-            lanzarAplicacionPrincipal();
+
+            // CREACIÓN DEL SCRIPT NINJA (.BAT)
+            File batFile = new File("actualizador_ninja.bat");
+            try (PrintWriter writer = new PrintWriter(batFile)) {
+                writer.println("@echo off");
+                writer.println("timeout /t 2 /nobreak > NUL"); // Espera 2 seg a que Java muera
+                writer.println("move /Y \"app\\update.jar\" \"app\\" + originalJar.getName() + "\""); // Reemplaza
+                writer.println("start " + APP_NAME + ".exe"); // Vuelve a abrir tu app
+                writer.println("del \"%~f0\""); // El script se suicida
+            }
+
+            // Ejecutamos el script de forma silenciosa y matamos a Java para liberar el archivo
+            new ProcessBuilder("cmd", "/c", "start", "/min", batFile.getName()).start();
+            Platform.exit();
+            System.exit(0);
 
         } catch (Exception e) {
-            Platform.runLater(() -> lblEstado.setText("Error crítico de descarga."));
-            lanzarAplicacionPrincipal(); // Intenta abrir la versión vieja si la nueva falla
+            e.printStackTrace();
+            lanzarAplicacionPrincipalEnMemoria(); 
         }
     }
 
-    private void lanzarAplicacionPrincipal() {
-        Platform.runLater(() -> lblEstado.setText("Iniciando entorno gráfico..."));
-        try {
-            File jarFile = new File(LATEST_JAR);
-            if (jarFile.exists()) {
-                // Utiliza la misma máquina virtual de Java (JRE) que está corriendo este updater
-                String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-                new ProcessBuilder(javaBin, "-cp", LATEST_JAR, "com.gemacron.fxfindlog.Launcher").start();
-            } else {
-                Platform.runLater(() -> {
-                    lblEstado.setText("Error Fatal: No se encontró el ejecutable. Verifique la red.");
-                    lblEstado.setTextFill(Color.web("#f85149"));
-                });
-                Thread.sleep(3000);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        // Cerrar el hilo de UI de JavaFX y matar el proceso del Updater
+    private void lanzarAplicacionPrincipalEnMemoria() {
         Platform.runLater(() -> {
-            Platform.exit();
-            System.exit(0);
+            try {
+                Stage mainStage = new Stage();
+                com.gemacron.fxfindlog.App miAppReal = new com.gemacron.fxfindlog.App();
+                miAppReal.start(mainStage);
+
+                Stage updaterStage = (Stage) lblEstado.getScene().getWindow();
+                updaterStage.close();
+            } catch (Exception e) {
+                lblEstado.setText("Error al cargar el módulo principal.");
+                e.printStackTrace();
+            }
         });
     }
 
@@ -243,6 +224,7 @@ public class Updater extends Application {
         if (vMatcher.find()) this.nuevaVersion = vMatcher.group(1);
         else throw new Exception("No tag version");
 
+        // VOLVEMOS A BUSCAR EL .JAR EN GITHUB PARA LA DESCARGA LIGERA
         Matcher uMatcher = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"(https://[^\"]+\\.jar)\"").matcher(json);
         if (uMatcher.find()) this.downloadUrl = uMatcher.group(1);
         else throw new Exception("No JAR asset found");
