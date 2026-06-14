@@ -115,3 +115,60 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-background-color: #1e293b;
     -fx-text-fill: #00e5ff; /* Tu cyan característico para resaltar */
 }
+
+/* =========================================================
+   NUEVO ESTILO PARA EL BOTÓN DE LIMPIEZA (v1.0.2)
+   Diseño: Rectangular, color Ámbar Llamativo, sin círculos.
+   ========================================================= */
+
+.boton-limpiar-plus {
+    /* Diseño Rectangular (ligeramente redondeado para matchear inputs) */
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    
+    /* Tamaño cuadrado pequeño pero accesible */
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    
+    /* Colores en estado ACTIVO (Ámbar llamativo) */
+    -fx-background-color: transparent; /* Fondo transparente */
+    -fx-border-color: #ffc107;      /* Borde Ámbar brillante */
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #ffc107;         /* Signo "+" Ámbar */
+    
+    /* Tipografía del signo + */
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+/* --- Estado: Mouse por encima (Hover) --- */
+.boton-limpiar-plus:hover {
+    /* Se rellena completamente de Ámbar */
+    -fx-background-color: #ffc107;
+    -fx-text-fill: #161c26; /* Texto oscuro (color del VBox) para contraste */
+    
+    /* Efecto de resplandor Ámbar (Glow) muy llamativo */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 193, 7, 0.6), 10, 0, 0, 0);
+}
+
+/* --- Estado: Clic presionado (Pressed) --- */
+.boton-limpiar-plus:pressed {
+    /* Color ámbar más oscuro para efecto de pulsación */
+    -fx-background-color: #ffa000;
+    -fx-border-color: #ffa000;
+}
+
+/* --- Estado: Desactivado (Disabled) --- */
+/* Cuando el formulario ya está limpio, se apaga */
+.boton-limpiar-plus:disabled {
+    -fx-border-color: #546e7a; /* Gris azulado oscuro, visible pero no distrae */
+    -fx-text-fill: #546e7a;
+    -fx-background-color: transparent;
+    -fx-cursor: default;
+}

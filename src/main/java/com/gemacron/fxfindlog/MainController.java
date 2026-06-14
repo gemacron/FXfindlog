@@ -62,6 +62,8 @@ public class MainController implements Initializable {
     @FXML
     private TextField txtNuevaRuta;
     @FXML
+    private Button btnLimpiar;
+    @FXML
     private Button btnAgregar;
     @FXML
     private Button btnEliminar;
@@ -201,11 +203,6 @@ public class MainController implements Initializable {
             if (newSelection != null) {
                 String usuarioAsignado = newSelection.getUsuarioSsh();
 
-                // Trazas de control en la consola de Java para auditar qué está leyendo el modelo
-                System.out.println("--- CLICK EN TABLA ---");
-                System.out.println("Servidor: " + newSelection.getAlias());
-                System.out.println("Usuario leído de SQLite: [" + usuarioAsignado + "]");
-
                 // 1. Cargar campos de texto estándar
                 txtNuevoAlias.setText(newSelection.getAlias());
                 txtNuevaIp.setText(newSelection.getIpAddress());
@@ -213,23 +210,28 @@ public class MainController implements Initializable {
 
                 // 2. Sincronizar de forma mandatoria el ComboBox y estirar el password
                 if (usuarioAsignado != null && !usuarioAsignado.trim().isEmpty()) {
-                    // Forzamos el valor y el texto visual del editor
                     cmbUsuario.setValue(usuarioAsignado.trim());
                     cmbUsuario.getEditor().setText(usuarioAsignado.trim());
-
-                    // Ejecutamos la extracción y descifrado AES directamente
                     estirarPassword(usuarioAsignado.trim());
                 } else {
-                    // Si viene vacío (servidor viejo sin migrar), limpiamos controles
                     cmbUsuario.setValue("");
                     cmbUsuario.getEditor().setText("");
                     txtPassword.clear();
                     lblEstado.setText("Este servidor no tiene un usuario asignado en SQLite.");
                 }
 
+                // 3. ACTUALIZAR ESTADO DE BOTONES
                 btnAgregar.setText("Actualizar Servidor");
+                if (btnLimpiar != null) {
+                    btnLimpiar.setDisable(false); // ACTIVAR el botón "+"
+                }
+                
             } else {
+                // Si la selección es nula (ej. al llamar a clearSelection)
                 btnAgregar.setText("Guardar Servidor");
+                if (btnLimpiar != null) {
+                    btnLimpiar.setDisable(true); // DESACTIVAR el botón "+"
+                }
             }
         });
 
@@ -237,6 +239,7 @@ public class MainController implements Initializable {
         DatabaseHelper.inicializarBaseDatos();
         cargarServidores();
         cargarConfiguracionGlobal();
+        if (btnLimpiar != null) btnLimpiar.setDisable(true);
     }
 
     private void cargarServidores() {
@@ -502,6 +505,29 @@ public class MainController implements Initializable {
                 task.cancel(true); // true = interrumpe el hilo subyacente (rompe la conexión JSch)
             }
         }
+    }
+    
+    @FXML
+    private void handleLimpiarFormulario() {
+        // 1. Limpiar todos los campos de texto
+        txtNuevoAlias.clear();
+        txtNuevaIp.clear();
+        txtNuevaRuta.clear();
+        
+        // 2. Limpiar el ComboBox y el Password
+        cmbUsuario.setValue("");
+        cmbUsuario.getEditor().clear();
+        txtPassword.clear();
+
+        // 3. Quitar la selección visual de la tabla
+        tableServidores.getSelectionModel().clearSelection();
+
+        // 4. Restaurar el estado de los botones
+        btnAgregar.setText("Guardar Servidor");
+        btnLimpiar.setDisable(true); // Se desactiva a sí mismo por defecto
+        
+        lblEstado.setText("Formulario limpiado. Listo para un nuevo registro.");
+        txtNuevoAlias.requestFocus(); // Mueve el cursor al primer campo
     }
 
     private void mostrarAlerta(String titulo, String mensaje, Alert.AlertType tipo) {

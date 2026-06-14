@@ -9,6 +9,7 @@ package com.gemacron.fxfindlog.updater;
  * @author gemacron
  */
 
+import com.gemacron.fxfindlog.App;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -30,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.scene.image.Image;
 
 public class Updater extends Application {
 
@@ -73,6 +75,11 @@ public class Updater extends Application {
 
         root.getChildren().addAll(lblEstado, progressBar);
         Scene scene = new Scene(root, 400, 120);
+        
+        try {
+            Image icon = new Image(App.class.getResourceAsStream("/com/gemacron/ico/icono_fx.png"));
+            stage.getIcons().add(icon);
+        } catch (Exception e) {}
         
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Iniciando " + APP_NAME + "...");
