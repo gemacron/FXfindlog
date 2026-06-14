@@ -68,7 +68,7 @@
               <shadedClassifierName>standalone</shadedClassifierName>
               <transformers>
                 <transformer>
-                  <mainClass>com.gemacron.fxfindlog.updater.Updater</mainClass>
+                  <mainClass>com.gemacron.fxfindlog.updater.UpdaterLauncher</mainClass>
                 </transformer>
               </transformers>
               <filters>
